@@ -16,68 +16,154 @@
 
 <style>
 :root{
-  --p:#5527d9;--p2:#6b3cf0;--p3:#3d18b5;--gold:#ffd52f;--bg:#f7f8fc;
-  --text:#171827;--muted:#74788b;--line:#e9eaf1;--green:#19b66b;--red:#f24d63;
-  --card:#fff;--shadow:0 12px 35px rgba(47,31,118,.08);--radius:18px;
+  --p:#5527d9;--p2:#6b3cf0;--p3:#3d18b5;--gold:#ffd52f;--bg:#f8f9fe;
+  --text:#171827;--muted:#74788b;--line:#e9eaf3;--green:#19b66b;--red:#f24d63;
+  --card:#fff;--shadow:0 10px 30px rgba(85,39,217,.08);--radius:18px;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{background:var(--bg);font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--text);overflow-x:hidden}
 body{min-height:100vh}
 button,input{font:inherit}
 button{border:0;cursor:pointer}
+
+/* SPLASH SCREEN (FAST ANIMATION) */
+#splashScreen{position:fixed;inset:0;background:linear-gradient(135deg,var(--p3),var(--p),#7042ef);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;transition:opacity .4s ease,visibility .4s}
+#splashScreen.hide{opacity:0;visibility:hidden;pointer-events:none}
+.splash-logo{width:80px;height:80px;border-radius:24px;background:#fff;display:grid;place-items:center;font-size:38px;box-shadow:0 12px 30px rgba(0,0,0,.2);animation:bounce 1.4s infinite ease-in-out}
+.splash-title{font-size:24px;font-weight:900;margin-top:16px;letter-spacing:-.5px}
+.splash-loader{width:42px;height:42px;border:3.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;margin-top:25px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.04)}}
+
+/* APP CONTAINER */
 .app{max-width:520px;margin:auto;min-height:100vh;background:var(--bg);position:relative}
-.topbar{height:66px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:30;border-bottom:1px solid #f0f0f5}
-.topbar .title{font-weight:800;font-size:17px}
-.icon-btn{width:40px;height:40px;border-radius:13px;background:#f5f4fb;color:#29243c;display:grid;place-items:center;font-size:19px}
-.page{padding:16px 16px 94px}
-.view{display:none;animation:fade .22s ease}.view.active{display:block}
-@keyframes fade{from{opacity:.2;transform:translateY(5px)}to{opacity:1;transform:none}}
-.hero{background:linear-gradient(135deg,var(--p3),var(--p),#7042ef);border-radius:22px;padding:20px;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-65px;top:-65px;background:rgba(255,255,255,.09)}
+.topbar{height:62px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:30;border-bottom:1px solid #f0f0f6}
+.topbar .title{font-weight:850;font-size:17px;color:#1e1b38}
+.icon-btn{width:38px;height:38px;border-radius:12px;background:#f5f4fb;color:#29243c;display:grid;place-items:center;font-size:18px;position:relative}
+.badge-dot{position:absolute;top:7px;right:7px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid #fff;display:none}
+
+.page{padding:14px 14px 94px}
+.view{display:none;animation:fade .2s ease}.view.active{display:block}
+@keyframes fade{from{opacity:.3;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* HERO CARD */
+.hero{background:linear-gradient(135deg,var(--p3),var(--p),#7547f3);border-radius:22px;padding:18px;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;right:-50px;top:-50px;background:rgba(255,255,255,.09)}
 .hello{display:flex;align-items:center;gap:11px}
-.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--p);font-weight:900;overflow:hidden}
+.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--p);font-weight:900;overflow:hidden;border:2px solid rgba(255,255,255,.8)}
 .avatar img{width:100%;height:100%;object-fit:cover}
-.small{font-size:11px;opacity:.8}.name{font-weight:800;font-size:15px}
-.balance-label{font-size:12px;opacity:.82;margin-top:20px}.balance{font-size:31px;font-weight:900;letter-spacing:-1px;margin:2px 0 14px}
-.btn{height:44px;padding:0 18px;border-radius:13px;font-weight:800;background:var(--p);color:#fff;display:inline-flex;align-items:center;justify-content:center}
-.btn.gold{background:var(--gold);color:#332100}.btn.full{width:100%}.btn.ghost{background:#f1edff;color:var(--p)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}
-.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px 8px;text-align:center}
-.stat b{display:block;font-size:14px}.stat span{font-size:10px;color:var(--muted)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:13px;box-shadow:0 5px 18px rgba(32,28,70,.025)}
+.small{font-size:11px;opacity:.85}.name{font-weight:800;font-size:15px}
+.balance-label{font-size:11px;opacity:.85;margin-top:16px}.balance{font-size:30px;font-weight:900;letter-spacing:-1px;margin:2px 0 12px}
+.btn{height:42px;padding:0 18px;border-radius:12px;font-weight:800;background:var(--p);color:#fff;display:inline-flex;align-items:center;justify-content:center}
+.btn.gold{background:var(--gold);color:#332100;font-weight:850}.btn.full{width:100%}
+
+/* STATS COLORFUL BOXES */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{border-radius:15px;padding:12px 6px;text-align:center;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.03)}
+.stat.c1{background:linear-gradient(135deg,#ff5f85,#ff3366)}
+.stat.c2{background:linear-gradient(135deg,#36d1dc,#5b86e5)}
+.stat.c3{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.stat b{display:block;font-size:13.5px;font-weight:850}.stat span{font-size:10px;opacity:.9;margin-top:2px;display:block}
+
+/* DAILY BONUS CARD */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-top:12px;box-shadow:0 4px 16px rgba(40,25,90,.02)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.section-title{font-weight:850;font-size:15px;margin:21px 2px 10px}
-.muted{color:var(--muted);font-size:12px}
-.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
-.quick button{background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px 4px;color:var(--text)}
-.qicon{width:34px;height:34px;border-radius:11px;margin:auto auto 6px;display:grid;place-items:center;color:#fff;font-weight:900}
-.quick small{font-size:10px}
-.pink{background:#ef4d83}.orange{background:#f6a623}.green{background:#20b77b}.red{background:#f04b58}.blue{background:#278fe2}.violet{background:#6741e7}
-.activity{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #f0f0f4}.activity:last-child{border-bottom:0}
-.circle{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:900;flex:none}
-.positive{color:var(--green);font-weight:800;font-size:12px}
-.task-tabs{display:flex;gap:7px;overflow:auto;padding:3px 0 11px}.task-tabs button{white-space:nowrap;border-radius:20px;background:#fff;border:1px solid var(--line);padding:8px 13px;font-size:11px;color:var(--muted)}.task-tabs button.active{background:var(--p);border-color:var(--p);color:#fff}
-.task{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid #f0f0f4}.task:last-child{border:0}.task .ticon{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:900;flex:none}.task h4{font-size:13px;margin:0 0 2px}.task p{font-size:10px;color:var(--muted);margin:0}.task .reward{margin-left:auto;color:var(--green);font-size:12px;font-weight:850}.task.done{opacity:.55}.task.done .reward{color:var(--muted)}
-.banner{height:130px;border-radius:18px;background:linear-gradient(135deg,#4020b9,#7043ef);color:#fff;display:flex;align-items:center;padding:18px;position:relative;overflow:hidden}.banner h2{font-size:21px;margin:0 0 4px}.banner p{font-size:11px;opacity:.85;margin:0}.banner .trophy{font-size:72px;position:absolute;right:14px;opacity:.95}
-.adbox{background:linear-gradient(135deg,#3e20b7,#7042ef);height:185px;border-radius:15px;display:grid;place-items:center;color:#fff;font-size:50px;position:relative}.adbox span{font-size:11px;position:absolute;bottom:12px;left:14px;opacity:.9}
-.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.method{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px 5px;text-align:center;font-size:10px}.method b{display:block;font-size:23px;margin-bottom:5px}.method.selected{border:2px solid var(--p);background:#faf8ff}
-.input{width:100%;height:48px;border:1px solid var(--line);border-radius:13px;padding:0 14px;outline:none;background:#fff}.input:focus{border-color:var(--p)}
-.refcode{font-size:22px;font-weight:900;letter-spacing:1px}.copy{color:var(--p);font-weight:800;font-size:12px;background:#f2edff;padding:9px 12px;border-radius:10px}
-.profile-head{text-align:center;padding:12px 0}.profile-head .avatar{width:78px;height:78px;margin:auto;border:4px solid #fff;box-shadow:0 5px 20px rgba(50,30,130,.12)}.profile-head h2{margin:9px 0 2px;font-size:17px}.menu-list{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}.menu-item{display:flex;align-items:center;gap:11px;padding:15px;border-bottom:1px solid #f0f0f4}.menu-item:last-child{border:0}.menu-item .mi{width:34px;height:34px;border-radius:11px;background:#f3efff;color:var(--p);display:grid;place-items:center}.menu-item span:last-child{margin-left:auto;color:#9a9cab}
-.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:76px;background:rgba(255,255,255,.96);backdrop-filter:blur(15px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:40;padding-bottom:env(safe-area-inset-bottom)}.nav{background:none;color:#858799;font-size:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.nav .ni{font-size:20px;line-height:1}.nav.active{color:var(--p);font-weight:850}.nav.active .ni{transform:translateY(-1px)}
-.toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,15px);background:#1d1b27;color:#fff;padding:11px 15px;border-radius:12px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:100;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
+.btn-claim{height:32px;padding:0 14px;border-radius:20px;font-size:11.5px;font-weight:850;background:linear-gradient(135deg,#ff9900,#ff5500);color:#fff;box-shadow:0 4px 10px rgba(255,100,0,.25)}
+.btn-claim:disabled{background:#e0e0ea;color:#999;box-shadow:none}
+
+/* QUICK TASKS */
+.section-title{font-weight:850;font-size:14.5px;margin:18px 2px 9px;color:#1e1b38;display:flex;align-items:center;justify-content:space-between}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.quick button{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 4px;color:var(--text);transition:.15s}
+.quick button:active{transform:scale(.96)}
+.qicon{width:36px;height:36px;border-radius:11px;margin:auto auto 6px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:15px}
+.quick small{font-size:10px;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pink{background:linear-gradient(135deg,#ff4b72,#ff758c)}.orange{background:linear-gradient(135deg,#ff8c00,#e52d27)}.green{background:linear-gradient(135deg,#00b09b,#96c93d)}.red{background:linear-gradient(135deg,#ee0979,#ff6a00)}.blue{background:linear-gradient(135deg,#2193b0,#6dd5ed)}.violet{background:linear-gradient(135deg,#8e2de2,#4a00e0)}
+
+/* ACTIVITY */
+.activity{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid #f2f3f8}.activity:last-child{border-bottom:0}
+.circle{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-weight:900;flex:none;color:#fff;font-size:14px}
+.positive{color:var(--green);font-weight:850;font-size:12.5px}
+.muted{color:var(--muted);font-size:11.5px}
+
+/* TABS & TASKS */
+.task-tabs{display:flex;gap:7px;overflow:auto;padding:3px 0 10px}
+.task-tabs button{white-space:nowrap;border-radius:20px;background:#fff;border:1px solid var(--line);padding:7px 13px;font-size:11px;color:var(--muted);font-weight:700}
+.task-tabs button.active{background:var(--p);border-color:var(--p);color:#fff}
+.task{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid #f2f3f8}.task:last-child{border:0}
+.task .ticon{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:900;flex:none}
+.task h4{font-size:13px;margin:0 0 2px}.task p{font-size:10px;color:var(--muted);margin:0}.task .reward{margin-left:auto;color:var(--green);font-size:12px;font-weight:850}.task.done{opacity:.55}.task.done .reward{color:var(--muted)}
+.copy{color:var(--p);font-weight:800;font-size:11px;background:#f2edff;padding:7px 12px;border-radius:9px}
+
+/* WITHDRAW & METHODS */
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.method{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 4px;text-align:center;font-size:10px;font-weight:700}
+.method b{display:block;font-size:20px;margin-bottom:4px}
+.method.selected{border:2px solid var(--p);background:#f9f7ff;color:var(--p)}
+.input{width:100%;height:46px;border:1px solid var(--line);border-radius:12px;padding:0 14px;outline:none;background:#fff}
+
+/* DRAWER MENU */
+.drawer{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;visibility:hidden;opacity:0;transition:.25s}
+.drawer.show{visibility:visible;opacity:1}
+.drawer-content{width:280px;height:100%;background:#fff;padding:24px 18px;transform:translateX(-100%);transition:.25s ease;display:flex;flex-direction:column}
+.drawer.show .drawer-content{transform:translateX(0)}
+.drawer-item{display:flex;align-items:center;gap:12px;padding:13px 10px;border-radius:10px;color:var(--text);font-weight:700;font-size:13px;cursor:pointer}
+.drawer-item:hover{background:#f5f3ff;color:var(--p)}
+
+/* BOTTOM NAV */
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:70px;background:rgba(255,255,255,.96);backdrop-filter:blur(15px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:40}
+.nav{background:none;color:#858799;font-size:9.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.nav .ni{font-size:19px;line-height:1}.nav.active{color:var(--p);font-weight:850}
+
+/* POPUPS & MODALS */
+.modal{position:fixed;inset:0;background:rgba(10,8,25,.6);z-index:110;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.pop-card{width:min(400px,100%);background:#fff;border-radius:22px;padding:24px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.2);animation:pop .25s ease}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.toast{position:fixed;left:50%;bottom:84px;transform:translate(-50%,15px);background:#1d1b27;color:#fff;padding:10px 16px;border-radius:12px;font-size:11.5px;opacity:0;pointer-events:none;transition:.2s;z-index:120;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+<div id="splashScreen">
+  <div class="splash-logo">💰</div>
+  <div class="splash-title">EarnHub</div>
+  <p style="font-size:12px;opacity:.8;margin-top:4px">Watch, Earn & Grow</p>
+  <div class="splash-loader"></div>
+</div>
+
+<!-- DRAWER MENU -->
+<div class="drawer" id="drawerMenu" onclick="closeDrawer()">
+  <div class="drawer-content" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+      <div class="avatar" id="drawerAvatar">EH</div>
+      <div><b id="drawerName" style="font-size:14px">User</b><div class="muted" id="drawerUsername">@user</div></div>
+    </div>
+    <div class="drawer-item" onclick="openPage('profile');closeDrawer()">👤 My Profile</div>
+    <div class="drawer-item" onclick="openPage('wallet');closeDrawer()">💳 Payment History</div>
+    <div class="drawer-item" onclick="showStaticModal('Privacy Policy', 'Your privacy is 100% safe with EarnHub. We do not share your private data.')">🔒 Privacy Policy</div>
+    <div class="drawer-item" onclick="showStaticModal('Terms & Conditions', '1. No multiple accounts allowed.\n2. Do not use VPN or bots.\n3. Payouts are made within 24 hours.')">📜 Terms of Service</div>
+    <div class="drawer-item" onclick="contactSupport()">💬 Support Channel</div>
+    <div style="margin-top:auto" class="muted">Version 2.0.0</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
 <div class="app">
   <header class="topbar">
-    <button class="icon-btn" id="backBtn" onclick="goBack()">‹</button>
+    <button class="icon-btn" id="menuBtn" onclick="openDrawer()">☰</button>
+    <button class="icon-btn" id="backBtn" onclick="openPage('home')" style="display:none">‹</button>
     <div class="title" id="pageTitle">Home</div>
-    <button class="icon-btn" onclick="openPage('wallet')">💳</button>
+    <button class="icon-btn" id="notifBtn" onclick="openPage('notifications')">
+      🔔
+      <div class="badge-dot" id="notifBadge"></div>
+    </button>
   </header>
 
   <main class="page">
-    <!-- Home View -->
+    <!-- HOME VIEW -->
     <section class="view active" id="home">
       <div class="hero">
         <div class="hello">
@@ -88,100 +174,127 @@ button{border:0;cursor:pointer}
         <div class="balance" id="homeBalance">৳ 0.00</div>
         <button class="btn gold" onclick="openPage('withdraw')">Withdraw</button>
       </div>
+
+      <!-- Colorful Stats -->
       <div class="stats">
-        <div class="stat"><b id="adsTotal">৳ 0.00</b><span>Ads Watch</span></div>
-        <div class="stat"><b id="webTotal">৳ 0.00</b><span>Web Visit</span></div>
-        <div class="stat"><b id="refTotal">৳ 0.00</b><span>Referrals</span></div>
+        <div class="stat c1"><b id="adsTotal">৳ 0.00</b><span>Ads Watch</span></div>
+        <div class="stat c2"><b id="webTotal">৳ 0.00</b><span>Click Ads</span></div>
+        <div class="stat c3"><b id="refTotal">৳ 0.00</b><span>Referrals</span></div>
       </div>
+
+      <!-- Compact Daily Bonus -->
       <div class="card">
         <div class="row">
-          <div><b>Daily Bonus</b><div class="muted">Claim your daily bonus</div></div>
-          <button class="btn" id="bonusBtn" onclick="claimBonus()">Claim</button>
+          <div><b style="font-size:13px">Daily Bonus</b><div class="muted">Claim your daily bonus</div></div>
+          <button class="btn-claim" id="bonusBtn" onclick="claimDailyBonus()">Claim</button>
         </div>
       </div>
 
+      <!-- Dynamic Quick Tasks -->
       <div class="section-title">Quick Tasks</div>
-      <div class="quick">
-        <button onclick="openPage('adgram')"><div class="qicon pink">▣</div><small>AdGram</small></button>
-        <button onclick="openPage('tasks');filterTasks('ads')"><div class="qicon orange">▶</div><small>Ads</small></button>
-        <button onclick="openPage('tasks');filterTasks('web')"><div class="qicon green">◎</div><small>Web Visit</small></button>
-        <button onclick="openPage('tasks');filterTasks('subscribe')"><div class="qicon red">▶</div><small>Subscribe</small></button>
+      <div class="quick" id="quickTasksContainer">
+        <!-- Rendered dynamically -->
       </div>
 
+      <!-- Recent Activity -->
       <div class="section-title">Recent Activity</div>
       <div class="card" id="recentActivity"></div>
     </section>
 
-    <!-- Tasks View -->
+    <!-- TASKS VIEW -->
     <section class="view" id="tasks">
       <div class="task-tabs">
-        <button class="active" data-filter="all" onclick="filterTasks('all')">All</button>
-        <button data-filter="ads" onclick="filterTasks('ads')">Ads</button>
-        <button data-filter="web" onclick="filterTasks('web')">Web</button>
-        <button data-filter="subscribe" onclick="filterTasks('subscribe')">Subscribe</button>
+        <button class="active" onclick="filterTasks('all', this)">All</button>
+        <button onclick="filterTasks('ads', this)">Ads</button>
+        <button onclick="filterTasks('web', this)">Click Ads</button>
+        <button onclick="filterTasks('subscribe', this)">Subscribe</button>
       </div>
       <div class="section-title" id="t_ads_title">Ad Tasks</div>
       <div class="card" id="adTasks"></div>
-      <div class="section-title" id="t_web_title">Web Visit (Timer)</div>
+      <div class="section-title" id="t_web_title">Click Ads (Timer)</div>
       <div class="card" id="webTasks"></div>
-      <div class="section-title" id="t_sub_title">Mandatory Tasks</div>
+      <div class="section-title" id="t_sub_title">Mandatory Subscribe Tasks</div>
       <div class="card" id="subTasks"></div>
     </section>
 
-    <!-- AdGram Real Ads View -->
+    <!-- ADGRAM VIEW -->
     <section class="view" id="adgram">
       <div class="card">
-        <h2 style="margin:0 0 4px">AdGram Reward Video</h2>
-        <p class="muted">Watch short video ads and earn direct rewards.</p>
-        <div class="adbox" id="adPreview">▶<span>AdsGram Player</span></div>
+        <h2 style="font-size:17px;margin-bottom:4px">AdGram Reward Video</h2>
+        <p class="muted">Watch full video ads and earn real cash.</p>
+        <div style="background:linear-gradient(135deg,#3e20b7,#7042ef);height:170px;border-radius:15px;display:grid;place-items:center;color:#fff;font-size:44px;margin:14px 0" id="adBox">▶</div>
         <div class="stats">
-          <div class="stat"><b id="adRewardVal">৳ 25.00</b><span>Reward</span></div>
-          <div class="stat"><b style="color:var(--green)">Ready</b><span>Status</span></div>
+          <div class="stat c2"><b id="adRewardVal">৳ 25.00</b><span>Reward</span></div>
+          <div class="stat c3"><b>Ready</b><span>Status</span></div>
         </div>
-        <button class="btn full" style="margin-top:14px" id="watchAdBtn" onclick="showAdsgramVideo()">Watch Video Ad</button>
+        <button class="btn full" style="margin-top:14px" id="watchAdBtn" onclick="playAdsgramVideo()">Watch Video Ad</button>
       </div>
     </section>
 
-    <!-- Refer View -->
+    <!-- REFER VIEW -->
     <section class="view" id="refer">
-      <div class="banner"><div><h2>Refer & Earn</h2><p id="refBannerDesc">Earn ৳50 for each invite</p></div><div class="trophy">🤝</div></div>
-      <div class="card"><div class="muted">Your Referral Code</div><div class="row" style="margin-top:8px"><div class="refcode" id="refCode">---</div><button class="copy" onclick="copyRef()">Copy</button></div></div>
-      <div class="card"><div class="muted">Share Your Link</div><div class="row" style="margin-top:8px"><div style="font-size:11px;word-break:break-all" id="refLink">Loading...</div><button class="copy" onclick="shareRef()">Share</button></div></div>
-      <div class="section-title">Referral Stats</div>
+      <div style="background:linear-gradient(135deg,#4020b9,#7043ef);border-radius:18px;padding:16px;color:#fff;display:flex;align-items:center;justify-content:space-between">
+        <div><h2 style="font-size:18px">Refer & Earn</h2><p style="font-size:11px;opacity:.9" id="refBannerDesc">Earn ৳50 per invite</p></div>
+        <div style="font-size:42px">🤝</div>
+      </div>
+      <div class="card">
+        <div class="muted">Your Referral Code</div>
+        <div class="row" style="margin-top:6px"><b class="refcode" id="refCode">---</b><button class="copy" onclick="copyRef()">Copy</button></div>
+      </div>
+      <div class="card">
+        <div class="muted">Share Your Link</div>
+        <div class="row" style="margin-top:6px"><div style="font-size:10.5px;word-break:break-all" id="refLink">Loading...</div><button class="copy" onclick="shareRef()">Share</button></div>
+      </div>
       <div class="stats">
-        <div class="stat"><b id="refCount">0</b><span>Total Referrals</span></div>
-        <div class="stat"><b id="refEarn">৳ 0.00</b><span>Total Earnings</span></div>
-        <div class="stat"><b id="refRateVal">৳ 50</b><span>Per Referral</span></div>
+        <div class="stat c1"><b id="refCount">0</b><span>Total Referrals</span></div>
+        <div class="stat c3"><b id="refEarn">৳ 0.00</b><span>Total Earnings</span></div>
+        <div class="stat c2"><b id="refRateVal">৳ 50</b><span>Per Referral</span></div>
       </div>
     </section>
 
-    <!-- Wallet View -->
+    <!-- WALLET VIEW -->
     <section class="view" id="wallet">
-      <div class="hero"><div class="balance-label">Total Balance</div><div class="balance" id="walletBalance">৳ 0.00</div><button class="btn gold" onclick="openPage('withdraw')">Withdraw →</button></div>
+      <div class="hero">
+        <div class="balance-label">Total Balance</div>
+        <div class="balance" id="walletBalance">৳ 0.00</div>
+        <button class="btn gold" onclick="openPage('withdraw')">Withdraw →</button>
+      </div>
       <div class="section-title">Withdrawal Requests History</div>
-      <div class="card" id="transactions"></div>
+      <div class="card" id="withdrawHistoryList"></div>
     </section>
 
-    <!-- Withdraw View -->
+    <!-- WITHDRAW VIEW -->
     <section class="view" id="withdraw">
-      <div class="card"><div class="muted">Your Balance</div><div class="balance" id="withdrawBalance" style="color:var(--p);margin:3px 0">৳ 0.00</div></div>
+      <div class="card"><div class="muted">Available Balance</div><div class="balance" id="withdrawBalance" style="color:var(--p)">৳ 0.00</div></div>
       <div class="section-title">Select Method</div>
       <div class="method-grid">
         <button class="method selected" data-method="Bkash" onclick="selectMethod(this)"><b>✦</b>Bkash</button>
         <button class="method" data-method="Nagad" onclick="selectMethod(this)"><b>◉</b>Nagad</button>
         <button class="method" data-method="Rocket" onclick="selectMethod(this)"><b>✧</b>Rocket</button>
       </div>
-      <div class="section-title">Account / Mobile Number</div><input class="input" id="withdrawAccount" placeholder="017xxxxxxxx">
-      <div class="section-title">Enter Amount</div><input class="input" id="withdrawAmount" type="number" min="200" placeholder="Minimum ৳ 200.00">
-      <button class="btn full" style="margin-top:15px" onclick="withdraw()">Withdraw Now</button>
+      <div class="section-title">Account Number</div>
+      <input class="input" id="withdrawAccount" placeholder="017xxxxxxxx">
+      <div class="section-title">Amount (Minimum ৳ 200)</div>
+      <input class="input" id="withdrawAmount" type="number" placeholder="Enter amount">
+      <button class="btn full" style="margin-top:14px" onclick="submitWithdraw()">Submit Withdrawal</button>
     </section>
 
-    <!-- Profile View -->
+    <!-- NOTIFICATIONS VIEW -->
+    <section class="view" id="notifications">
+      <div class="section-title">Announcements & Notices</div>
+      <div class="card" id="notifList"></div>
+    </section>
+
+    <!-- PROFILE VIEW -->
     <section class="view" id="profile">
-      <div class="profile-head"><div class="avatar" id="profileAvatar">EH</div><h2 id="profileName">User Name</h2><div class="muted" id="profileUsername">@username</div></div>
-      <div class="menu-list">
-        <div class="menu-item" onclick="openPage('wallet')"><div class="mi">💳</div>Withdrawal History<span>›</span></div>
-        <div class="menu-item" onclick="contactSupport()"><div class="mi">💬</div>Support Channel<span>›</span></div>
+      <div style="text-align:center;padding:16px 0">
+        <div class="avatar" id="profileAvatar" style="width:70px;height:70px;margin:auto;font-size:24px">EH</div>
+        <h2 id="profileName" style="font-size:16px;margin-top:8px">User Name</h2>
+        <div class="muted" id="profileUsername">@username</div>
+      </div>
+      <div class="card" style="padding:4px 12px">
+        <div class="activity" onclick="openPage('wallet')">💳 <b style="font-size:12px;margin-left:10px">Withdrawal History</b></div>
+        <div class="activity" onclick="contactSupport()">💬 <b style="font-size:12px;margin-left:10px">Support Channel</b></div>
       </div>
     </section>
   </main>
@@ -189,17 +302,27 @@ button{border:0;cursor:pointer}
   <nav class="bottom">
     <button class="nav active" data-page="home" onclick="openPage('home')"><span class="ni">⌂</span>Home</button>
     <button class="nav" data-page="tasks" onclick="openPage('tasks')"><span class="ni">✓</span>Tasks</button>
-    <button class="nav" data-page="refer" onclick="openPage('refer')"><span class="ni">♧</span>Refer</button>
-    <button class="nav" data-page="wallet" onclick="openPage('wallet')"><span class="ni">▣</span>Wallet</button>
-    <button class="nav" data-page="profile" onclick="openPage('profile')"><span class="ni">●</span>Profile</button>
+    <button class="nav" data-page="refer" onclick="openPage('refer')"><span class="ni">👥</span>Refer</button>
+    <button class="nav" data-page="wallet" onclick="openPage('wallet')"><span class="ni">💳</span>Wallet</button>
+    <button class="nav" data-page="profile" onclick="openPage('profile')"><span class="ni">👤</span>Profile</button>
   </nav>
+</div>
+
+<!-- MODAL / POPUP -->
+<div class="modal" id="appModal">
+  <div class="pop-card">
+    <div style="font-size:46px" id="popIcon">🎉</div>
+    <h3 style="margin:10px 0 6px" id="popTitle">Title</h3>
+    <p class="muted" id="popDesc" style="font-size:12.5px;margin-bottom:18px;white-space:pre-line">Message</p>
+    <button class="btn full" onclick="closeModal()">OK, Got it</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ==================== CONFIGURATION ====================
-// ১. এখানে আপনার Firebase Config দিন:
+// ==================== 1. FIREBASE CONFIG ====================
+// আপনার ফায়ারবেস কনফিগ দিন:
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyB7VDaGzd9H2omiJuaOREEDE8L1Z-4DVi0",
@@ -211,65 +334,65 @@ const firebaseConfig = {
   measurementId: "G-B97VLV9SQL"
 };
 
-// ২. আপনার Telegram Bot Username দিন:
 const BOT_USERNAME = "YourBotUsername";
-
-// ৩. AdsGram Block ID (Adsgram.ai থেকে পাবেন, টেস্টের জন্য ব্লক আইডি ব্যবহার করতে পারেন):
-const ADGRAM_BLOCK_ID = "YOUR_ADSGRAM_BLOCK_ID"; 
+const ADGRAM_BLOCK_ID = "YOUR_ADSGRAM_BLOCK_ID"; // Adsgram Block ID
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// ==================== 2. TELEGRAM USER AUTH ====================
 const TG = window.Telegram?.WebApp;
 if(TG){ TG.ready(); TG.expand(); }
 
 let tgUser = TG?.initDataUnsafe?.user || {
-  id: "demo_" + Math.floor(1000 + Math.random() * 9000),
-  first_name: "Demo User",
-  username: "demouser"
+  id: "guest_" + Math.floor(1000 + Math.random() * 9000),
+  first_name: "Rifat",
+  last_name: "Ahmed",
+  username: "rifatahmed",
+  photo_url: ""
 };
 
-let currentUser = null;
-let current = 'home';
-let selectedMethod = 'Bkash';
+let currentUser = JSON.parse(localStorage.getItem('cached_user') || 'null');
 let appSettings = { refBonus: 50, adReward: 25, dailyBonus: 10, minWithdraw: 200 };
+let selectedMethod = 'Bkash';
 
 function money(n){ return '৳ ' + Number(n || 0).toFixed(2); }
 function toast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  clearTimeout(window.__toast);
-  window.__toast = setTimeout(()=>t.classList.remove('show'), 2200);
+  clearTimeout(window.__t);
+  window.__t = setTimeout(()=>t.classList.remove('show'), 2200);
 }
 
-// ==================== INIT USER & SETTINGS ====================
-async function init() {
-  // Load App Settings
-  db.collection("settings").doc("app").onSnapshot(doc => {
-    if(doc.exists) {
-      appSettings = { ...appSettings, ...doc.data() };
+// ==================== 3. FAST PRELOADER & DATA FETCH ====================
+async function initApp() {
+  if (currentUser) renderUI();
+
+  // 1. Fetch Settings
+  db.collection("settings").doc("app").onSnapshot(d => {
+    if(d.exists) {
+      appSettings = { ...appSettings, ...d.data() };
       document.getElementById('adRewardVal').textContent = money(appSettings.adReward);
       document.getElementById('refRateVal').textContent = money(appSettings.refBonus);
-      document.getElementById('refBannerDesc').textContent = `Earn ${money(appSettings.refBonus)} for each invite`;
+      document.getElementById('refBannerDesc').textContent = `Earn ${money(appSettings.refBonus)} per invite`;
     }
   });
 
+  // 2. Fetch User
   const uid = String(tgUser.id);
   const userRef = db.collection("users").doc(uid);
-  const doc = await userRef.get();
+  const snap = await userRef.get();
 
-  if(!doc.exists) {
+  if(!snap.exists) {
     const startParam = TG?.initDataUnsafe?.start_param;
-    let referredBy = null;
-    if(startParam && startParam.startsWith('ref_')) {
-      referredBy = startParam.replace('ref_', '');
-    }
+    let referredBy = (startParam && startParam.startsWith('ref_')) ? startParam.replace('ref_', '') : null;
 
-    const newUser = {
+    currentUser = {
       id: uid,
       name: [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || 'User',
-      username: tgUser.username ? '@' + tgUser.username : '@no_username',
+      username: tgUser.username ? '@' + tgUser.username : '@user',
+      photo: tgUser.photo_url || '',
       balance: 10.00,
       ads: 0,
       web: 0,
@@ -280,21 +403,20 @@ async function init() {
       dailyClaimedDate: '',
       history: [{ icon: '🎁', title: 'Welcome Bonus', amount: 10, time: 'Just now' }]
     };
-    await userRef.set(newUser);
-    currentUser = newUser;
+    await userRef.set(currentUser);
 
-    // Referrer Bonus
+    // Referral Bonus for inviter
     if(referredBy && referredBy !== uid) {
       const refDoc = db.collection("users").doc(referredBy);
       refDoc.get().then(r => {
-        if(r.exists) {
+        if(r.exists){
           refDoc.update({
             balance: firebase.firestore.FieldValue.increment(appSettings.refBonus),
             referrals: firebase.firestore.FieldValue.increment(appSettings.refBonus),
             refCount: firebase.firestore.FieldValue.increment(1),
             history: firebase.firestore.FieldValue.arrayUnion({
-              icon: '🤝',
-              title: `Referral: ${newUser.name}`,
+              icon: '👥',
+              title: `Referral: ${currentUser.name}`,
               amount: appSettings.refBonus,
               time: 'Just now'
             })
@@ -303,27 +425,44 @@ async function init() {
       });
     }
   } else {
-    currentUser = doc.data();
+    currentUser = snap.data();
+    if(tgUser.photo_url) currentUser.photo = tgUser.photo_url;
   }
 
-  // Realtime user sync
-  userRef.onSnapshot(snap => {
-    if(snap.exists) {
-      currentUser = snap.data();
-      renderAll();
+  localStorage.setItem('cached_user', JSON.stringify(currentUser));
+  renderUI();
+
+  // 3. Realtime Sync
+  userRef.onSnapshot(s => {
+    if(s.exists){
+      currentUser = s.data();
+      localStorage.setItem('cached_user', JSON.stringify(currentUser));
+      renderUI();
     }
   });
 
-  renderAll();
   listenTasks();
   listenWithdrawals();
+  listenNotifications();
+
+  // Hide Splash smoothly
+  setTimeout(() => {
+    document.getElementById('splashScreen').classList.add('hide');
+  }, 400);
 }
 
-function renderAll() {
+// ==================== 4. UI RENDERING ====================
+function setAvatar(elId) {
+  const el = document.getElementById(elId);
+  if(!el) return;
+  if(currentUser?.photo) el.innerHTML = `<img src="${currentUser.photo}" alt="">`;
+  else el.textContent = (currentUser?.name || 'EH').slice(0,2).toUpperCase();
+}
+
+function renderUI() {
   if(!currentUser) return;
   ['homeBalance','walletBalance','withdrawBalance'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.textContent = money(currentUser.balance);
+    document.getElementById(id).textContent = money(currentUser.balance);
   });
   document.getElementById('adsTotal').textContent = money(currentUser.ads);
   document.getElementById('webTotal').textContent = money(currentUser.web);
@@ -332,14 +471,17 @@ function renderAll() {
   document.getElementById('refCount').textContent = currentUser.refCount || 0;
 
   document.getElementById('homeName').textContent = currentUser.name;
+  document.getElementById('drawerName').textContent = currentUser.name;
   document.getElementById('profileName').textContent = currentUser.name;
+  document.getElementById('drawerUsername').textContent = currentUser.username;
   document.getElementById('profileUsername').textContent = currentUser.username;
-  document.getElementById('homeAvatar').textContent = currentUser.name.slice(0,2).toUpperCase();
-  document.getElementById('profileAvatar').textContent = currentUser.name.slice(0,2).toUpperCase();
 
-  const code = currentUser.id;
-  document.getElementById('refCode').textContent = code;
-  document.getElementById('refLink').textContent = `https://t.me/${BOT_USERNAME}?start=ref_${code}`;
+  setAvatar('homeAvatar');
+  setAvatar('drawerAvatar');
+  setAvatar('profileAvatar');
+
+  document.getElementById('refCode').textContent = currentUser.id;
+  document.getElementById('refLink').textContent = `https://t.me/${BOT_USERNAME}?start=ref_${currentUser.id}`;
 
   const today = new Date().toISOString().slice(0,10);
   const claimed = currentUser.dailyClaimedDate === today;
@@ -347,31 +489,34 @@ function renderAll() {
   bBtn.textContent = claimed ? 'Claimed' : 'Claim';
   bBtn.disabled = claimed;
 
-  // Recent Activity Render
+  // Recent Activity
   const recent = currentUser.history || [];
-  document.getElementById('recentActivity').innerHTML = recent.slice(-4).reverse().map(x => `
+  document.getElementById('recentActivity').innerHTML = recent.slice(-5).reverse().map(x => `
     <div class="activity">
       <div class="circle violet">${x.icon}</div>
       <div style="flex:1"><b style="font-size:12px">${x.title}</b><div class="muted">${x.time}</div></div>
-      <div class="positive">+${money(x.amount)}</div>
+      <div class="positive">${x.amount >= 0 ? '+' : ''}${money(x.amount)}</div>
     </div>
   `).join('') || '<div class="muted" style="text-align:center">No activity yet</div>';
 }
 
 function openPage(page) {
-  current = page;
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === page));
   document.querySelectorAll('.nav').forEach(n => n.classList.toggle('active', n.dataset.page === page));
-  const titles = { home:'Home', tasks:'Tasks', refer:'Refer & Earn', wallet:'Wallet', withdraw:'Withdraw', profile:'Profile', adgram:'AdGram' };
+  const titles = { home:'Home', tasks:'Tasks', refer:'Refer & Earn', wallet:'Wallet', withdraw:'Withdraw', profile:'Profile', notifications:'Announcements', adgram:'AdGram' };
   document.getElementById('pageTitle').textContent = titles[page] || 'EarnHub';
-  document.getElementById('backBtn').style.visibility = ['home','tasks','refer','wallet','profile'].includes(page) ? 'hidden' : 'visible';
+  
+  const isHome = (page === 'home');
+  document.getElementById('menuBtn').style.display = isHome ? 'grid' : 'none';
+  document.getElementById('backBtn').style.display = isHome ? 'none' : 'grid';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function goBack(){ openPage('home'); }
+function openDrawer(){ document.getElementById('drawerMenu').classList.add('show'); }
+function closeDrawer(){ document.getElementById('drawerMenu').classList.remove('show'); }
 
-// ==================== DAILY BONUS ====================
-async function claimBonus() {
+// ==================== 5. DAILY BONUS & WINNING POPUP ====================
+async function claimDailyBonus() {
   const today = new Date().toISOString().slice(0,10);
   if(currentUser.dailyClaimedDate === today) return toast('Already claimed today!');
 
@@ -385,22 +530,39 @@ async function claimBonus() {
       time: 'Just now'
     })
   });
-  toast(`Daily Bonus Claimed: ${money(appSettings.dailyBonus)}`);
+  showPopup('🎉', 'Daily Bonus Added!', `Congratulations! You received ${money(appSettings.dailyBonus)} daily login reward.`);
 }
 
-// ==================== TASKS MANAGEMENT ====================
+// ==================== 6. TASKS & QUICK TASKS ====================
 function listenTasks() {
   db.collection("tasks").onSnapshot(snap => {
     const tasks = [];
     snap.forEach(d => tasks.push({ id: d.id, ...d.data() }));
 
+    // Quick tasks render
+    const quicks = tasks.slice(0, 4);
+    const colors = ['pink', 'orange', 'green', 'blue'];
+    const icons = ['▣', '▶', '◎', '✈'];
+    document.getElementById('quickTasksContainer').innerHTML = quicks.map((q, i) => `
+      <button onclick="executeTask('${q.id}', ${q.reward}, '${q.cat}', '${q.link||''}')">
+        <div class="qicon ${colors[i%4]}">${icons[i%4]}</div>
+        <small>${q.title}</small>
+      </button>
+    `).join('') || `
+      <button onclick="openPage('adgram')"><div class="qicon pink">▣</div><small>AdGram</small></button>
+      <button onclick="openPage('tasks');filterTasks('ads')"><div class="qicon orange">▶</div><small>Ads</small></button>
+      <button onclick="openPage('tasks');filterTasks('web')"><div class="qicon green">◎</div><small>Click Ads</small></button>
+      <button onclick="openPage('tasks');filterTasks('subscribe')"><div class="qicon red">✈</div><small>Subscribe</small></button>
+    `;
+
+    // Tasks list render
     const ads = tasks.filter(t => t.cat === 'ads');
     const web = tasks.filter(t => t.cat === 'web');
     const sub = tasks.filter(t => t.cat === 'subscribe');
 
     document.getElementById('adTasks').innerHTML = ads.map(taskHTML).join('') || '<div class="muted">No ad tasks</div>';
     document.getElementById('webTasks').innerHTML = web.map(taskHTML).join('') || '<div class="muted">No web tasks</div>';
-    document.getElementById('subTasks').innerHTML = sub.map(taskHTML).join('') || '<div class="muted">No mandatory tasks</div>';
+    document.getElementById('subTasks').innerHTML = sub.map(taskHTML).join('') || '<div class="muted">No subscribe tasks</div>';
   });
 }
 
@@ -423,8 +585,11 @@ function taskHTML(t) {
   `;
 }
 
-function filterTasks(cat) {
-  document.querySelectorAll('.task-tabs button').forEach(b => b.classList.toggle('active', b.dataset.filter === cat));
+function filterTasks(cat, btn) {
+  if(btn) {
+    document.querySelectorAll('.task-tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
   const showAll = cat === 'all';
   document.getElementById('adTasks').style.display = (showAll || cat === 'ads') ? 'block' : 'none';
   document.getElementById('t_ads_title').style.display = (showAll || cat === 'ads') ? 'block' : 'none';
@@ -443,19 +608,19 @@ function executeTask(id, reward, cat, link) {
   }
 
   if(cat === 'web') {
-    toast('Stay on the page for 15 seconds to receive reward...');
+    toast('Stay 15 seconds to receive reward...');
     setTimeout(async () => {
-      completeTaskSuccess(id, reward, cat, 'Web Visit Task');
+      taskDoneSuccess(id, reward, cat, 'Click Ads Visit');
     }, 15000);
   } else {
-    toast('Verifying task completion...');
+    toast('Verifying task...');
     setTimeout(async () => {
-      completeTaskSuccess(id, reward, cat, 'Mandatory Task');
+      taskDoneSuccess(id, reward, cat, 'Mandatory Task');
     }, 4000);
   }
 }
 
-async function completeTaskSuccess(id, reward, cat, title) {
+async function taskDoneSuccess(id, reward, cat, title) {
   const updateData = {
     balance: firebase.firestore.FieldValue.increment(reward),
     [`completed.${id}`]: true,
@@ -470,18 +635,17 @@ async function completeTaskSuccess(id, reward, cat, title) {
   if(cat === 'web') updateData.web = firebase.firestore.FieldValue.increment(reward);
 
   await db.collection("users").doc(currentUser.id).update(updateData);
-  toast(`Task completed! +${money(reward)} added`);
+  showPopup('💰', 'Task Completed!', `You earned ${money(reward)} for completing this task.`);
 }
 
-// ==================== REAL ADSGRAM ADS ====================
-function showAdsgramVideo() {
+// ==================== 7. REAL ADSGRAM VIDEO ADS ====================
+function playAdsgramVideo() {
   const btn = document.getElementById('watchAdBtn');
   btn.disabled = true;
-  
+
   if (window.Adsgram) {
     const AdController = window.Adsgram.init({ blockId: ADGRAM_BLOCK_ID });
-    AdController.show().then(async (result) => {
-      // User watched full ad
+    AdController.show().then(async () => {
       await db.collection("users").doc(currentUser.id).update({
         balance: firebase.firestore.FieldValue.increment(appSettings.adReward),
         ads: firebase.firestore.FieldValue.increment(appSettings.adReward),
@@ -492,23 +656,22 @@ function showAdsgramVideo() {
           time: 'Just now'
         })
       });
-      toast(`Ad finished! +${money(appSettings.adReward)} added`);
+      showPopup('🎥', 'Ad Reward Added!', `You received ${money(appSettings.adReward)} for watching the video ad.`);
       btn.disabled = false;
-    }).catch((err) => {
-      toast('Ad error or cancelled');
+    }).catch(() => {
+      toast('Ad skipped or failed to load');
       btn.disabled = false;
     });
   } else {
-    // Fallback Simulator if Adsgram SDK not configured
-    toast('Loading test Ad...');
+    // Simulator
     let sec = 5;
-    const p = document.getElementById('adPreview');
+    const box = document.getElementById('adBox');
     const t = setInterval(async () => {
       sec--;
-      p.firstChild.textContent = `⏳ ${sec}s`;
-      if(sec <= 0) {
+      box.textContent = `⏳ ${sec}s`;
+      if(sec <= 0){
         clearInterval(t);
-        p.firstChild.textContent = '▶';
+        box.textContent = '▶';
         await db.collection("users").doc(currentUser.id).update({
           balance: firebase.firestore.FieldValue.increment(appSettings.adReward),
           ads: firebase.firestore.FieldValue.increment(appSettings.adReward),
@@ -519,29 +682,28 @@ function showAdsgramVideo() {
             time: 'Just now'
           })
         });
-        toast(`+${money(appSettings.adReward)} Added!`);
+        showPopup('🎥', 'Ad Completed!', `You received ${money(appSettings.adReward)}.`);
         btn.disabled = false;
       }
     }, 1000);
   }
 }
 
-// ==================== WITHDRAW & HISTORY ====================
-function selectMethod(el) {
+// ==================== 8. WITHDRAW & NOTIFICATIONS ====================
+function selectMethod(el){
   document.querySelectorAll('.method').forEach(x => x.classList.remove('selected'));
   el.classList.add('selected');
   selectedMethod = el.dataset.method;
 }
 
-async function withdraw() {
+async function submitWithdraw() {
   const amount = Number(document.getElementById('withdrawAmount').value);
   const account = document.getElementById('withdrawAccount').value.trim();
 
-  if(!account) return toast('Please enter mobile number');
+  if(!account) return toast('Enter payment mobile number');
   if(!amount || amount < appSettings.minWithdraw) return toast(`Minimum withdraw is ${money(appSettings.minWithdraw)}`);
   if(amount > currentUser.balance) return toast('Insufficient balance');
 
-  // Deduct balance
   await db.collection("users").doc(currentUser.id).update({
     balance: firebase.firestore.FieldValue.increment(-amount),
     history: firebase.firestore.FieldValue.arrayUnion({
@@ -552,54 +714,88 @@ async function withdraw() {
     })
   });
 
-  // Create request for Admin Panel
   await db.collection("withdrawals").add({
     userId: currentUser.id,
     userName: currentUser.name,
-    userUsername: currentUser.username,
-    method: selectedMethod,
     account: account,
+    method: selectedMethod,
     amount: amount,
     status: 'pending',
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  toast('Withdrawal request submitted!');
+  showPopup('✅', 'Request Submitted!', `Your ${money(amount)} withdrawal request has been sent for review.`);
   document.getElementById('withdrawAmount').value = '';
   document.getElementById('withdrawAccount').value = '';
   openPage('wallet');
 }
 
 function listenWithdrawals() {
-  db.collection("withdrawals")
-    .where("userId", "==", String(tgUser.id))
-    .onSnapshot(snap => {
-      const el = document.getElementById('transactions');
-      if(snap.empty) {
-        el.innerHTML = '<div class="muted" style="text-align:center">No withdrawal history</div>';
-        return;
-      }
-      el.innerHTML = snap.docs.map(d => {
-        const w = d.data();
-        const color = w.status==='approved' ? 'green' : w.status==='rejected' ? 'red' : 'orange';
-        return `
-          <div class="activity">
-            <div class="circle ${color}">💳</div>
-            <div style="flex:1">
-              <b style="font-size:12px">${w.method} - ${w.account}</b>
-              <div class="muted">Status: <span style="text-transform:capitalize;font-weight:bold;color:var(--${color})">${w.status}</span></div>
-            </div>
-            <div class="positive">${money(w.amount)}</div>
+  db.collection("withdrawals").where("userId", "==", String(tgUser.id)).onSnapshot(snap => {
+    const el = document.getElementById('withdrawHistoryList');
+    if(snap.empty) {
+      el.innerHTML = '<div class="muted" style="text-align:center">No withdrawal history</div>';
+      return;
+    }
+    el.innerHTML = snap.docs.map(d => {
+      const w = d.data();
+      const color = w.status==='approved' ? 'green' : w.status==='rejected' ? 'red' : 'orange';
+      return `
+        <div class="activity">
+          <div class="circle ${color}">💳</div>
+          <div style="flex:1">
+            <b style="font-size:12px">${w.method} - ${w.account}</b>
+            <div class="muted">Status: <span style="text-transform:capitalize;font-weight:bold;color:var(--${color})">${w.status}</span></div>
           </div>
-        `;
-      }).join('');
-    });
+          <div class="positive">${money(w.amount)}</div>
+        </div>
+      `;
+    }).join('');
+  });
 }
+
+function listenNotifications() {
+  db.collection("notices").orderBy("createdAt", "desc").limit(10).onSnapshot(snap => {
+    if(snap.empty) return;
+    document.getElementById('notifBadge').style.display = 'block';
+    
+    // Popup latest notice once per session
+    const latest = snap.docs[0].data();
+    const lastSeenId = localStorage.getItem('last_seen_notice');
+    if(lastSeenId !== snap.docs[0].id) {
+      localStorage.setItem('last_seen_notice', snap.docs[0].id);
+      showPopup('📢', latest.title, latest.message);
+    }
+
+    document.getElementById('notifList').innerHTML = snap.docs.map(d => {
+      const n = d.data();
+      return `
+        <div class="activity">
+          <div class="circle violet">📢</div>
+          <div style="flex:1">
+            <b style="font-size:13px">${n.title}</b>
+            <div class="muted" style="margin-top:2px">${n.message}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  });
+}
+
+// ==================== MODALS & HELPERS ====================
+function showPopup(icon, title, desc){
+  document.getElementById('popIcon').textContent = icon;
+  document.getElementById('popTitle').textContent = title;
+  document.getElementById('popDesc').textContent = desc;
+  document.getElementById('appModal').classList.add('show');
+}
+function showStaticModal(title, desc){ showPopup('ℹ️', title, desc); }
+function closeModal(){ document.getElementById('appModal').classList.remove('show'); }
 
 function copyRef(){ navigator.clipboard?.writeText(document.getElementById('refCode').textContent); toast('Referral code copied'); }
 function shareRef(){
   const link = document.getElementById('refLink').textContent;
-  if(navigator.share) navigator.share({ title:'EarnHub', text:'Join EarnHub and start earning!', url:link });
+  if(navigator.share) navigator.share({ title:'EarnHub', url:link });
   else { navigator.clipboard?.writeText(link); toast('Referral link copied'); }
 }
 function contactSupport(){
@@ -607,7 +803,7 @@ function contactSupport(){
   else window.open('https://t.me/your_support_channel', '_blank');
 }
 
-window.onload = init;
+window.onload = initApp;
 </script>
 </body>
 </html>
