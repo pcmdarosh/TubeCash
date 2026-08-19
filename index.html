@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#5426d9">
+<title>EarnHub — Watch, Earn & Grow</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+:root{
+  --p:#5527d9;--p2:#6b3cf0;--p3:#3d18b5;--gold:#ffd52f;--bg:#f7f8fc;
+  --text:#171827;--muted:#74788b;--line:#e9eaf1;--green:#19b66b;--red:#f24d63;
+  --card:#fff;--shadow:0 12px 35px rgba(47,31,118,.08);--radius:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--text)}
+body{min-height:100vh}
+button,input{font:inherit}
+button{border:0;cursor:pointer}
+.app{max-width:520px;margin:auto;min-height:100vh;background:var(--bg);position:relative}
+.topbar{height:66px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:30;border-bottom:1px solid #f0f0f5}
+.topbar .title{font-weight:800;font-size:17px}
+.icon-btn{width:40px;height:40px;border-radius:13px;background:#f5f4fb;color:#29243c;display:grid;place-items:center;font-size:19px}
+.page{padding:16px 16px 94px}
+.view{display:none;animation:fade .22s ease}.view.active{display:block}
+@keyframes fade{from{opacity:.2;transform:translateY(5px)}to{opacity:1;transform:none}}
+.hero{background:linear-gradient(135deg,var(--p3),var(--p),#7042ef);border-radius:22px;padding:20px;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-65px;top:-65px;background:rgba(255,255,255,.09)}
+.hello{display:flex;align-items:center;gap:11px}
+.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--p);font-weight:900;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.small{font-size:11px;opacity:.8}.name{font-weight:800;font-size:15px}
+.balance-label{font-size:12px;opacity:.82;margin-top:20px}.balance{font-size:31px;font-weight:900;letter-spacing:-1px;margin:2px 0 14px}
+.btn{height:44px;padding:0 18px;border-radius:13px;font-weight:800;background:var(--p);color:#fff}
+.btn.gold{background:var(--gold);color:#332100}.btn.full{width:100%}.btn.ghost{background:#f1edff;color:var(--p)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px 8px;text-align:center}
+.stat b{display:block;font-size:14px}.stat span{font-size:10px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:13px;box-shadow:0 5px 18px rgba(32,28,70,.025)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.section-title{font-weight:850;font-size:15px;margin:21px 2px 10px}
+.muted{color:var(--muted);font-size:12px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.quick button{background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px 4px;color:var(--text)}
+.qicon{width:34px;height:34px;border-radius:11px;margin:auto auto 6px;display:grid;place-items:center;color:#fff;font-weight:900}
+.quick small{font-size:10px}
+.pink{background:#ef4d83}.orange{background:#f6a623}.green{background:#20b77b}.red{background:#f04b58}.blue{background:#278fe2}.violet{background:#6741e7}
+.activity{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #f0f0f4}.activity:last-child{border-bottom:0}
+.circle{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:900;flex:none}
+.positive{color:var(--green);font-weight:800;font-size:12px}
+.task-tabs{display:flex;gap:7px;overflow:auto;padding:3px 0 11px}.task-tabs button{white-space:nowrap;border-radius:20px;background:#fff;border:1px solid var(--line);padding:8px 13px;font-size:11px;color:var(--muted)}.task-tabs button.active{background:var(--p);border-color:var(--p);color:#fff}
+.task{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid #f0f0f4}.task:last-child{border:0}.task .ticon{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:900;flex:none}.task h4{font-size:13px;margin:0 0 2px}.task p{font-size:10px;color:var(--muted);margin:0}.task .reward{margin-left:auto;color:var(--green);font-size:12px;font-weight:850}.task.done{opacity:.55}.task.done .reward{color:var(--muted)}
+.banner{height:130px;border-radius:18px;background:linear-gradient(135deg,#4020b9,#7043ef);color:#fff;display:flex;align-items:center;padding:18px;position:relative;overflow:hidden}.banner h2{font-size:21px;margin:0 0 4px}.banner p{font-size:11px;opacity:.85;margin:0}.banner .trophy{font-size:72px;position:absolute;right:14px;opacity:.95}
+.adbox{background:linear-gradient(135deg,#3e20b7,#7042ef);height:185px;border-radius:15px;display:grid;place-items:center;color:#fff;font-size:50px;position:relative}.adbox span{font-size:11px;position:absolute;bottom:12px;left:14px;opacity:.9}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.method{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px 5px;text-align:center;font-size:10px}.method b{display:block;font-size:23px;margin-bottom:5px}.method.selected{border:2px solid var(--p);background:#faf8ff}
+.input{width:100%;height:48px;border:1px solid var(--line);border-radius:13px;padding:0 14px;outline:none;background:#fff}.input:focus{border-color:var(--p)}
+.refcode{font-size:22px;font-weight:900;letter-spacing:1px}.copy{color:var(--p);font-weight:800;font-size:12px;background:#f2edff;padding:9px 12px;border-radius:10px}
+.profile-head{text-align:center;padding:12px 0}.profile-head .avatar{width:78px;height:78px;margin:auto;border:4px solid #fff;box-shadow:0 5px 20px rgba(50,30,130,.12)}.profile-head h2{margin:9px 0 2px;font-size:17px}.menu-list{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}.menu-item{display:flex;align-items:center;gap:11px;padding:15px;border-bottom:1px solid #f0f0f4}.menu-item:last-child{border:0}.menu-item .mi{width:34px;height:34px;border-radius:11px;background:#f3efff;color:var(--p);display:grid;place-items:center}.menu-item span:last-child{margin-left:auto;color:#9a9cab}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:76px;background:rgba(255,255,255,.96);backdrop-filter:blur(15px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:40;padding-bottom:env(safe-area-inset-bottom)}.nav{background:none;color:#858799;font-size:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.nav .ni{font-size:20px;line-height:1}.nav.active{color:var(--p);font-weight:850}.nav.active .ni{transform:translateY(-1px)}
+.toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,15px);background:#1d1b27;color:#fff;padding:11px 15px;border-radius:12px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:100;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="icon-btn" id="backBtn" onclick="openPage('home')">‹</button>
+    <div class="title" id="pageTitle">Home</div>
+    <button class="icon-btn" onclick="openPage('wallet')">💳</button>
+  </header>
+
+  <main class="page">
+    <!-- Home View -->
+    <section class="view active" id="home">
+      <div class="hero">
+        <div class="hello">
+          <div class="avatar" id="homeAvatar">EH</div>
+          <div><div class="small">Welcome 👋</div><div class="name" id="homeName">Loading...</div></div>
+        </div>
+        <div class="balance-label">Total Balance</div>
+        <div class="balance" id="homeBalance">৳ 0.00</div>
+        <button class="btn gold" onclick="openPage('withdraw')">Withdraw</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="adsTotal">৳ 0.00</b><span>Ads Watch</span></div>
+        <div class="stat"><b id="webTotal">৳ 0.00</b><span>Web Visit</span></div>
+        <div class="stat"><b id="refTotal">৳ 0.00</b><span>Referrals</span></div>
+      </div>
+      <div class="card">
+        <div class="row">
+          <div><b>Daily Bonus</b><div class="muted">Claim ৳ 10.00 daily</div></div>
+          <button class="btn" id="bonusBtn" onclick="claimDailyBonus()">Claim</button>
+        </div>
+      </div>
+
+      <div class="section-title">Quick Tasks</div>
+      <div class="quick">
+        <button onclick="openPage('tasks');filterTasks('ads')"><div class="qicon pink">▣</div><small>AdGram</small></button>
+        <button onclick="openPage('tasks');filterTasks('ads')"><div class="qicon orange">▶</div><small>Ads</small></button>
+        <button onclick="openPage('tasks');filterTasks('web')"><div class="qicon green">◎</div><small>Web Visit</small></button>
+        <button onclick="openPage('tasks');filterTasks('subscribe')"><div class="qicon red">▶</div><small>Subscribe</small></button>
+      </div>
+
+      <div class="section-title">Recent Transactions</div>
+      <div class="card" id="recentActivity"></div>
+    </section>
+
+    <!-- Tasks View -->
+    <section class="view" id="tasks">
+      <div class="task-tabs">
+        <button class="active" onclick="filterTasks('all')">All</button>
+        <button onclick="filterTasks('ads')">Ads</button>
+        <button onclick="filterTasks('web')">Web</button>
+        <button onclick="filterTasks('subscribe')">Subscribe</button>
+      </div>
+      <div class="section-title">Available Tasks</div>
+      <div class="card" id="allTasksList"></div>
+    </section>
+
+    <!-- Ad Watch View -->
+    <section class="view" id="adgram">
+      <div class="card">
+        <h2 style="margin:0 0 4px">Watch & Earn</h2>
+        <p class="muted">Wait for the timer to finish and get rewarded.</p>
+        <div class="adbox" id="adPreview">▶<span>Ad Player</span></div>
+        <button class="btn full" id="adBtn" style="margin-top:14px" onclick="watchAdTimer()">Start Watching</button>
+      </div>
+    </section>
+
+    <!-- Refer View -->
+    <section class="view" id="refer">
+      <div class="banner"><div><h2>Refer & Earn</h2><p>Earn ৳ 50 per valid invite</p></div><div class="trophy">🤝</div></div>
+      <div class="card">
+        <div class="muted">Your Referral Code</div>
+        <div class="row" style="margin-top:8px">
+          <div class="refcode" id="refCode">---</div>
+          <button class="copy" onclick="copyRef()">Copy</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="muted">Share Referral Link</div>
+        <div class="row" style="margin-top:8px">
+          <div style="font-size:11px;word-break:break-all" id="refLink">Loading...</div>
+          <button class="copy" onclick="shareRef()">Share</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="refCount">0</b><span>Total Referrals</span></div>
+        <div class="stat"><b id="refEarn">৳ 0.00</b><span>Earned</span></div>
+        <div class="stat"><b>৳ 50</b><span>Per Ref</span></div>
+      </div>
+    </section>
+
+    <!-- Wallet View -->
+    <section class="view" id="wallet">
+      <div class="hero">
+        <div class="balance-label">Total Balance</div>
+        <div class="balance" id="walletBalance">৳ 0.00</div>
+        <button class="btn gold" onclick="openPage('withdraw')">Withdraw →</button>
+      </div>
+      <div class="section-title">Withdrawal Requests</div>
+      <div class="card" id="userWithdrawHistory"></div>
+    </section>
+
+    <!-- Withdraw View -->
+    <section class="view" id="withdraw">
+      <div class="card">
+        <div class="muted">Available Balance</div>
+        <div class="balance" id="withdrawBalance" style="color:var(--p)">৳ 0.00</div>
+      </div>
+      <div class="section-title">Select Payment Method</div>
+      <div class="method-grid">
+        <button class="method selected" data-method="Bkash" onclick="selectMethod(this)"><b>✦</b>Bkash</button>
+        <button class="method" data-method="Nagad" onclick="selectMethod(this)"><b>◉</b>Nagad</button>
+        <button class="method" data-method="Rocket" onclick="selectMethod(this)"><b>✧</b>Rocket</button>
+      </div>
+      <div class="section-title">Account Number</div>
+      <input class="input" id="withdrawAccount" placeholder="017xxxxxxxx">
+      <div class="section-title">Amount</div>
+      <input class="input" id="withdrawAmount" type="number" min="200" placeholder="Minimum ৳ 200">
+      <button class="btn full" style="margin-top:15px" onclick="submitWithdraw()">Submit Request</button>
+    </section>
+
+    <!-- Profile View -->
+    <section class="view" id="profile">
+      <div class="profile-head">
+        <div class="avatar" id="profileAvatar">EH</div>
+        <h2 id="profileName">User Name</h2>
+        <div class="muted" id="profileUsername">@username</div>
+      </div>
+      <div class="menu-list">
+        <div class="menu-item" onclick="openPage('wallet')"><div class="mi">💳</div>Withdrawal History<span>›</span></div>
+        <div class="menu-item" onclick="toast('Contact Support via Bot')"><div class="mi">💬</div>Support<span>›</span></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom">
+    <button class="nav active" data-page="home" onclick="openPage('home')"><span class="ni">⌂</span>Home</button>
+    <button class="nav" data-page="tasks" onclick="openPage('tasks')"><span class="ni">✓</span>Tasks</button>
+    <button class="nav" data-page="refer" onclick="openPage('refer')"><span class="ni">♧</span>Refer</button>
+    <button class="nav" data-page="wallet" onclick="openPage('wallet')"><span class="ni">▣</span>Wallet</button>
+    <button class="nav" data-page="profile" onclick="openPage('profile')"><span class="ni">●</span>Profile</button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== 1. FIREBASE CONFIG ====================
+// এখানে আপনার ফায়ারবেস কনফিগ দিন:
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// আপনার টেলিগ্রাম বট ইউজারনেম এখানে দিন (রেফারেল লিঙ্কের জন্য):
+const BOT_USERNAME = "YourTelegramBotUsername";
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ==================== 2. TELEGRAM USER DETECTION ====================
+const TG = window.Telegram?.WebApp;
+if (TG) { TG.ready(); TG.expand(); }
+
+let tgUser = TG?.initDataUnsafe?.user || {
+  id: "test_" + Math.floor(1000 + Math.random() * 9000),
+  first_name: "Test User",
+  username: "testuser"
+};
+
+let currentUser = null;
+let selectedMethod = 'Bkash';
+
+const defaultTasks = [
+  { id: 'ad1', cat: 'ads', title: 'AdGram Video Ad', desc: 'Watch full ad', reward: 20, link: '' },
+  { id: 'web1', cat: 'web', title: 'Visit Website', desc: 'Browse for 15s', reward: 15, link: 'https://google.com' },
+  { id: 'tg1', cat: 'subscribe', title: 'Telegram Channel', desc: 'Join channel', reward: 25, link: 'https://t.me/' }
+];
+
+// ==================== 3. DATA SYNC & INITIALIZATION ====================
+async function initUser() {
+  const uid = String(tgUser.id);
+  const userRef = db.collection("users").doc(uid);
+  const doc = await userRef.get();
+
+  if (!doc.exists) {
+    // Check referral
+    const startParam = TG?.initDataUnsafe?.start_param;
+    let referredBy = null;
+    if (startParam && startParam.startsWith('ref_')) {
+      referredBy = startParam.replace('ref_', '');
+    }
+
+    const newUser = {
+      id: uid,
+      name: tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : ''),
+      username: tgUser.username ? '@' + tgUser.username : '@no_username',
+      balance: 10.0, // Join bonus
+      adsEarn: 0,
+      webEarn: 0,
+      refEarn: 0,
+      refCount: 0,
+      referredBy: referredBy,
+      completedTasks: [],
+      lastBonusDate: '',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    await userRef.set(newUser);
+    currentUser = newUser;
+
+    // Give bonus to referrer
+    if (referredBy && referredBy !== uid) {
+      const refUserRef = db.collection("users").doc(referredBy);
+      refUserRef.get().then(rDoc => {
+        if(rDoc.exists){
+          refUserRef.update({
+            balance: firebase.firestore.FieldValue.increment(50),
+            refEarn: firebase.firestore.FieldValue.increment(50),
+            refCount: firebase.firestore.FieldValue.increment(1)
+          });
+        }
+      });
+    }
+  } else {
+    currentUser = doc.data();
+  }
+
+  // Realtime Listener for Balance changes
+  userRef.onSnapshot((snap) => {
+    if(snap.exists) {
+      currentUser = snap.data();
+      renderUI();
+    }
+  });
+
+  renderUI();
+  loadTasks();
+  loadUserWithdrawals();
+}
+
+function money(n) { return '৳ ' + Number(n || 0).toFixed(2); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toast);
+  window.__toast = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function renderUI() {
+  if (!currentUser) return;
+  document.getElementById('homeName').textContent = currentUser.name;
+  document.getElementById('profileName').textContent = currentUser.name;
+  document.getElementById('profileUsername').textContent = currentUser.username;
+  document.getElementById('homeAvatar').textContent = currentUser.name.slice(0,2).toUpperCase();
+  document.getElementById('profileAvatar').textContent = currentUser.name.slice(0,2).toUpperCase();
+
+  ['homeBalance','walletBalance','withdrawBalance'].forEach(id => {
+    document.getElementById(id).textContent = money(currentUser.balance);
+  });
+  document.getElementById('adsTotal').textContent = money(currentUser.adsEarn);
+  document.getElementById('webTotal').textContent = money(currentUser.webEarn);
+  document.getElementById('refTotal').textContent = money(currentUser.refEarn);
+  document.getElementById('refEarn').textContent = money(currentUser.refEarn);
+  document.getElementById('refCount').textContent = currentUser.refCount || 0;
+
+  const code = currentUser.id;
+  document.getElementById('refCode').textContent = code;
+  document.getElementById('refLink').textContent = `https://t.me/${BOT_USERNAME}?start=ref_${code}`;
+
+  const today = new Date().toISOString().slice(0,10);
+  const claimed = currentUser.lastBonusDate === today;
+  const btn = document.getElementById('bonusBtn');
+  btn.textContent = claimed ? 'Claimed' : 'Claim';
+  btn.disabled = claimed;
+}
+
+// ==================== 4. APP ACTIONS ====================
+function openPage(page) {
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === page));
+  document.querySelectorAll('.nav').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+  document.getElementById('backBtn').style.visibility = (page === 'home') ? 'hidden' : 'visible';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function claimDailyBonus() {
+  const today = new Date().toISOString().slice(0,10);
+  if (currentUser.lastBonusDate === today) return toast('Already claimed today!');
+
+  const userRef = db.collection("users").doc(currentUser.id);
+  await userRef.update({
+    balance: firebase.firestore.FieldValue.increment(10),
+    lastBonusDate: today
+  });
+  toast('Claimed ৳ 10.00 Daily Bonus!');
+}
+
+async function loadTasks() {
+  const snap = await db.collection("tasks").get();
+  let tasks = [];
+  if (snap.empty) {
+    tasks = defaultTasks;
+  } else {
+    snap.forEach(d => tasks.push({ id: d.id, ...d.data() }));
+  }
+
+  const completed = currentUser.completedTasks || [];
+  const listEl = document.getElementById('allTasksList');
+  listEl.innerHTML = tasks.map(t => {
+    const isDone = completed.includes(t.id);
+    return `
+      <div class="task ${isDone ? 'done' : ''}" data-cat="${t.cat}">
+        <div class="ticon ${t.cat==='ads'?'orange':t.cat==='web'?'green':'blue'}">▶</div>
+        <div>
+          <h4>${t.title}</h4>
+          <p>${t.desc}</p>
+        </div>
+        <div class="reward">${isDone ? 'Done' : money(t.reward)}</div>
+        <button class="copy" style="margin-left:5px" onclick="runTask('${t.id}', ${t.reward}, '${t.cat}', '${t.link || ''}')">
+          ${isDone ? '✓' : 'Go'}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterTasks(cat) {
+  document.querySelectorAll('.task-tabs button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.task').forEach(el => {
+    if (cat === 'all' || el.dataset.cat === cat) el.style.display = 'flex';
+    else el.style.display = 'none';
+  });
+}
+
+async function runTask(taskId, reward, cat, link) {
+  if (currentUser.completedTasks?.includes(taskId)) return toast('Already Completed');
+  
+  if (cat === 'ads') {
+    openPage('adgram');
+    return;
+  }
+
+  if (link) {
+    if (TG?.openLink) TG.openLink(link);
+    else window.open(link, '_blank');
+  }
+
+  toast('Verifying task...');
+  setTimeout(async () => {
+    const updateData = {
+      balance: firebase.firestore.FieldValue.increment(reward),
+      completedTasks: firebase.firestore.FieldValue.arrayUnion(taskId)
+    };
+    if (cat === 'web') updateData.webEarn = firebase.firestore.FieldValue.increment(reward);
+    
+    await db.collection("users").doc(currentUser.id).update(updateData);
+    toast(`+${money(reward)} Added!`);
+    loadTasks();
+  }, 3000);
+}
+
+function watchAdTimer() {
+  const btn = document.getElementById('adBtn');
+  btn.disabled = true;
+  let sec = 5;
+  const p = document.getElementById('adPreview');
+  const timer = setInterval(async () => {
+    sec--;
+    p.textContent = `⏳ ${sec}s`;
+    if (sec <= 0) {
+      clearInterval(timer);
+      p.textContent = '✅ Completed';
+      btn.disabled = false;
+      await db.collection("users").doc(currentUser.id).update({
+        balance: firebase.firestore.FieldValue.increment(20),
+        adsEarn: firebase.firestore.FieldValue.increment(20)
+      });
+      toast('+৳ 20.00 Added!');
+    }
+  }, 1000);
+}
+
+function selectMethod(el) {
+  document.querySelectorAll('.method').forEach(m => m.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMethod = el.dataset.method;
+}
+
+async function submitWithdraw() {
+  const acc = document.getElementById('withdrawAccount').value.trim();
+  const amt = Number(document.getElementById('withdrawAmount').value);
+
+  if (!acc) return toast('Enter payment number');
+  if (!amt || amt < 200) return toast('Minimum withdrawal is ৳ 200');
+  if (amt > currentUser.balance) return toast('Insufficient balance');
+
+  // Deduct balance and create request
+  await db.collection("users").doc(currentUser.id).update({
+    balance: firebase.firestore.FieldValue.increment(-amt)
+  });
+
+  await db.collection("withdrawals").add({
+    userId: currentUser.id,
+    userName: currentUser.name,
+    account: acc,
+    method: selectedMethod,
+    amount: amt,
+    status: 'pending',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  toast('Withdrawal request submitted!');
+  document.getElementById('withdrawAccount').value = '';
+  document.getElementById('withdrawAmount').value = '';
+  openPage('wallet');
+}
+
+function loadUserWithdrawals() {
+  db.collection("withdrawals")
+    .where("userId", "==", String(tgUser.id))
+    .onSnapshot(snap => {
+      const el = document.getElementById('userWithdrawHistory');
+      if (snap.empty) {
+        el.innerHTML = '<div class="muted" style="text-align:center;padding:10px">No requests yet</div>';
+        return;
+      }
+      el.innerHTML = snap.docs.map(d => {
+        const w = d.data();
+        const color = w.status === 'approved' ? 'green' : w.status === 'rejected' ? 'red' : 'orange';
+        return `
+          <div class="activity">
+            <div class="circle ${color}">৳</div>
+            <div style="flex:1">
+              <b>${w.method} - ${w.account}</b>
+              <div class="muted">Status: <span style="text-transform:capitalize;font-weight:bold">${w.status}</span></div>
+            </div>
+            <div class="positive">${money(w.amount)}</div>
+          </div>
+        `;
+      }).join('');
+    });
+}
+
+function copyRef() {
+  navigator.clipboard.writeText(document.getElementById('refCode').textContent);
+  toast('Code Copied');
+}
+function shareRef() {
+  const l = document.getElementById('refLink').textContent;
+  if (navigator.share) navigator.share({ title: 'EarnHub', url: l });
+  else { navigator.clipboard.writeText(l); toast('Link Copied'); }
+}
+
+window.onload = initUser;
+</script>
+</body>
+</html>
